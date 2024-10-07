@@ -33,4 +33,37 @@ function crosswordSolver(str, words) {
     }
     return true;
   }
+
+  // Iterate through the grid to place words
+  for (let word of words) {
+    let placed = false;
+
+    for (let row = 0; row < rows.length; row++) {
+      for (let col = 0; col < cols; col++) {
+        // Check for horizontal placement
+        if (canPlaceWord(word, row, col, "across")) {
+          placeWord(word, row, col, "across");
+          placed = true;
+          break;
+        }
+        // Check for vertical placement
+        if (canPlaceWord(word, row, col, "down")) {
+          placeWord(word, row, col, "down");
+          placed = true;
+          break;
+        }
+      }
+      if (placed) break;
+    }
+
+    // If a word couldn't be placed, print error and exit
+    if (!placed) {
+      console.log("Error");
+      return;
+    }
+  }
+
+  // Join rows into string and print solved puzzle
+  const solved = grid.map((row) => row.join("")).join("\n");
+  console.log(solved);
 }
