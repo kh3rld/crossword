@@ -27,6 +27,11 @@ function crosswordSolver(str, words) {
       const r = direction === "across" ? row : row + i;
       const c = direction === "across" ? col + i : col;
 
+      // Check boundaries
+      if (r >= rows.length || c >= cols || r < 0 || c < 0) {
+        return false;
+      }
+
       if (grid[r][c] !== "." && grid[r][c] !== word[i]) {
         return false;
       }
@@ -68,6 +73,9 @@ function crosswordSolver(str, words) {
   console.log(solved);
 }
 
-const str = `2001\n0..0\n1000\n0..0`;
+const str = `2001
+0..0
+1000
+0..0`;
 const words = ["casa", "alan", "ciao", "anta"];
 crosswordSolver(str, words);
