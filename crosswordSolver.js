@@ -67,3 +67,7 @@ function crosswordSolver(str, words) {
   const solved = grid.map((row) => row.join("")).join("\n");
   console.log(solved);
 }
+
+const str = `2001\n0..0\n1000\n0..0`;
+const words = ["casa", "alan", "ciao", "anta"];
+crosswordSolver(str, words);
