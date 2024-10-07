@@ -118,3 +118,4 @@ const emptyPuzzle = `2001
 const words = ["casa", "alan", "ciao", "anta"];
 
 crosswordSolver(emptyPuzzle, words);
+module.exports = { crosswordSolver, hasDuplicates, lookIntoCrossword };
