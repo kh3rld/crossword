@@ -26,3 +26,31 @@ const crosswordSolver = require('./crosswordSolver');
     crosswordSolver(puzzle, words);
     expect(consoleSpy).toHaveBeenCalledWith("Error");
   });
+  const hasDuplicates = require('./crosswordSolver').hasDuplicates;
+
+describe("hasDuplicates", () => {
+  test("should return true if array has duplicates", () => {
+    const arr = ["a", "b", "a"];
+    expect(hasDuplicates(arr)).toBe(true);
+  });
+
+  test("should return false if array has no duplicates", () => {
+    const arr = ["a", "b", "c"];
+    expect(hasDuplicates(arr)).toBe(false);
+  });
+
+  test("should return false for empty array", () => {
+    const arr = [];
+    expect(hasDuplicates(arr)).toBe(false);
+  });
+
+  test("should handle array with one element", () => {
+    const arr = ["a"];
+    expect(hasDuplicates(arr)).toBe(false);
+  });
+
+  test("should handle array with mixed types", () => {
+    const arr = [1, "1", 2];
+    expect(hasDuplicates(arr)).toBe(false);
+  });
+});
