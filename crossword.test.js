@@ -54,3 +54,37 @@ describe("hasDuplicates", () => {
     expect(hasDuplicates(arr)).toBe(false);
   });
 });
+const lookIntoCrossword = require('./crosswordSolver').lookIntoCrossword;
+
+describe("lookIntoCrossword", () => {
+  test("should convert string into 2D array", () => {
+    const input = `2001\n0..0\n1000\n0..0`;
+    const expectedOutput = [
+      [2, 0, 0, 1],
+      [0, -1, -1, 0],
+      [1, 0, 0, 0],
+      [0, -1, -1, 0]
+    ];
+    expect(lookIntoCrossword(input)).toEqual(expectedOutput);
+  });
+
+  test("should handle empty input", () => {
+    const input = ``;
+    expect(lookIntoCrossword(input)).toEqual([]);
+  });
+
+  test("should handle input with all dots", () => {
+    const input = `....\n....`;
+    const expectedOutput = [
+      [-1, -1, -1, -1],
+      [-1, -1, -1, -1]
+    ];
+    expect(lookIntoCrossword(input)).toEqual(expectedOutput);
+  });
+
+  test("should handle single row input", () => {
+    const input = `2001`;
+    const expectedOutput = [[2, 0, 0, 1]];
+    expect(lookIntoCrossword(input)).toEqual(expectedOutput);
+  });
+});
