@@ -1,81 +1,120 @@
 function crosswordSolver(str, words) {
-  // Check if the string(str) and words are valid
-  if (!str || !words || words.length === 0) {
+  const invalid = typeof str !== "string" || !/^[.\n012]+$/.test(str); // Validate input crossword.
+  const invalidWords =
+    !Array.isArray(words) || words.some((word) => typeof word !== "string");
+
+  if (Array.isArray(words) && hasDuplicates(words)) {
     console.log("Error");
     return;
   }
 
-  // Split str into rows
-  const rows = str.split("\n");
-  const cols = rows[0].length;
-  const grid = rows.map((row) => row.split(""));
-
-  // Function to place a word in the grid
-  function placeWord(word, r, c, direction) {
-    for (let i = 0; i < word.length; i++) {
-      if (direction === "across") {
-        grid[r][c + i] = word[i];
-      } else {
-        grid[r + i][c] = word[i];
-      }
+  // Check if the number of starts is the same as the number of words
+  let startWord = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] > "0" && str[i] !== ".") {
+      startWord += parseInt(str[i]);
     }
   }
 
-  // Function to check if a word can be placed
-  function canPlaceWord(word, row, col, direction) {
-    for (let i = 0; i < word.length; i++) {
-      const r = direction === "across" ? row : row + i;
-      const c = direction === "across" ? col + i : col;
-
-      // Check boundaries
-      if (r >= rows.length || c >= cols || r < 0 || c < 0) {
-        return false;
-      }
-
-      if (grid[r][c] !== "." && grid[r][c] !== word[i]) {
-        return false;
-      }
-    }
-    return true;
+  if (startWord !== words.length) {
+    console.log("Error");
+    return;
   }
 
-  // Iterate through the grid to place words
-  for (let word of words) {
-    let placed = false;
+  // Return error if crossword or words are invalid.
+  if (invalid || invalidWords) {
+    console.log("Error");
+    return;
+  }
 
-    for (let row = 0; row < rows.length; row++) {
-      for (let col = 0; col < cols; col++) {
-        // Check for horizontal placement
-        if (canPlaceWord(word, row, col, "across")) {
-          placeWord(word, row, col, "across");
-          placed = true;
-          break;
+  // Func to convert into a simple array
+  function lookIntoCrossword(input) {
+    const rows = input.trim().split("\n");
+    return rows.map((row) =>
+      row.split("").map((char) => (char === "." ? -1 : parseInt(char)))
+    );
+  }
+
+  // Parse the input crossword into a simple array
+  const grid = lookIntoCrossword(str);
+
+  // Create a simple array to store the words in the puzzle
+  const puzzleWords = grid.map((row) =>
+    row.map((char) => (char === -1 ? "" : ""))
+  );
+
+  // Function to add words to the crossword
+  const addWords = (currentInd = 0) => {
+    if (currentInd === words.length) return true;
+
+    const word = words[currentInd];
+
+    for (let rowInd = 0; rowInd < grid.length; rowInd++) {
+      for (let colInd = 0; colInd < grid[0].length; colInd++) {
+        if (grid[rowInd][colInd] === 0) continue;
+
+        const char = { row: rowInd, col: colInd };
+
+        function directOfWord(direction) {
+          const otherschars = [];
+
+          for (let i = 0; i < word.length; i++) {
+            const row = direction === "horizontal" ? char.row : char.row + i;
+            const col = direction === "horizontal" ? char.col + i : char.col;
+
+            if (
+              row >= grid.length ||
+              col >= grid[0].length ||
+              (puzzleWords[row][col] !== "" &&
+                puzzleWords[row][col] !== word[i])
+            ) {
+              break;
+            }
+
+            otherschars.push({ row, col, value: puzzleWords[row][col] });
+            puzzleWords[row][col] = word[i];
+          }
+
+          // If we successfully placed all characters of the word, continue with recursion
+          if (otherschars.length === word.length && addWords(currentInd + 1)) {
+            return true;
+          }
+
+          // If it doesn't fit, revert changes
+          otherschars.forEach((otherchar) => {
+            puzzleWords[otherchar.row][otherchar.col] = otherchar.value;
+          });
+
+          return false;
         }
-        // Check for vertical placement
-        if (canPlaceWord(word, row, col, "down")) {
-          placeWord(word, row, col, "down");
-          placed = true;
-          break;
+
+        if (directOfWord("horizontal") || directOfWord("vertical")) {
+          return true;
         }
       }
-      if (placed) break;
     }
+    return false; // If the word cannot be added, return false
+  };
 
-    // If a word couldn't be placed, print error and exit
-    if (!placed) {
-      console.log("Error");
-      return;
-    }
+  // Try to add all words to the puzzle
+  if (!addWords()) {
+    console.log("Error");
+    return;
   }
 
-  // Join rows into string and print solved puzzle
-  const solved = grid.map((row) => row.join("")).join("\n");
-  console.log(solved);
+  // Convert the puzzleWords array to a string and print the result
+  const result = puzzleWords.map((row) => row.join("")).join("\n");
+  console.log(result);
 }
 
-const str = `2001
+function hasDuplicates(arr) {
+  return new Set(arr).size !== arr.length;
+}
+
+const emptyPuzzle = `2001
 0..0
 1000
 0..0`;
 const words = ["casa", "alan", "ciao", "anta"];
-crosswordSolver(str, words);
+
+crosswordSolver(emptyPuzzle, words);
